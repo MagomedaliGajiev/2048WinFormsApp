@@ -180,7 +180,7 @@ namespace _2048WinFormsApp
                                         var number = int.Parse(_labelsMap[i, j].Text);
                                         _score += number * 2;
                                         _labelsMap[i, j].Text = (number * 2).ToString();
-                                        _labelsMap[k,j].Text = string.Empty;
+                                        _labelsMap[k, j].Text = string.Empty;
                                     }
                                     break;
                                 }
@@ -257,6 +257,21 @@ namespace _2048WinFormsApp
 
             GenerateNumber();
             ShowScore();
+        }
+
+        private void ğåñòàğòToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Application.Restart();
+        }
+
+        private void âûõîäToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void ïğàâèëàToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Ïğàâèëà èãğû!");
         }
     }
 }
