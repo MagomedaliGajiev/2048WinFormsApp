@@ -40,6 +40,7 @@ namespace _2048WinFormsApp
 
         private void GenerateNumber()
         {
+            var random = new Random();
             while (true)
             {
                 var randomNumberLabel = _random.Next(_mapSize * _mapSize);
@@ -47,7 +48,15 @@ namespace _2048WinFormsApp
                 var indexColumn = randomNumberLabel % _mapSize;
                 if (_labelsMap[indexRow, indexColumn].Text == string.Empty)
                 {
-                    // нужно рандомно генерировать либо 2 либо 4
+                    var randomNumber = random.Next(1, 101);
+                    if (randomNumber <= 75)
+                    {
+                        _labelsMap[indexRow, indexColumn].Text = "2";
+                    }
+                    else
+                    {
+                        _labelsMap[indexRow, indexColumn].Text = "4";
+                    }
                     _labelsMap[indexRow, indexColumn].Text = "2";
                 }
                 break;
