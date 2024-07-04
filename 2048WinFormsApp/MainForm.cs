@@ -6,6 +6,7 @@ namespace _2048WinFormsApp
         private Label[,] _labelsMap;
         private static Random _random = new Random();
         private int _score = 0;
+        private int _bestScore = 0;
         public MainForm()
         {
             InitializeComponent();
@@ -16,6 +17,27 @@ namespace _2048WinFormsApp
             InitMap();
             GenerateNumber();
             ShowScore();
+            CalculateBestScore();
+        }
+
+        private void CalculateBestScore()
+        {
+            var users = UserManager.GetAll();
+            if (users.Count == 0)
+            {
+                return;
+            }
+
+            _bestScore= users[0].Score;
+            foreach (var user in users)
+            {
+                if (user.Score > _bestScore)
+                {
+                    _bestScore = user.Score;
+                }
+            }
+
+            ShowBestScore();
         }
 
         private void InitMap()
@@ -36,6 +58,15 @@ namespace _2048WinFormsApp
         private void ShowScore()
         {
             scoreLabel.Text = _score.ToString();
+        }
+
+        private void ShowBestScore()
+        {
+            if (_score > _bestScore)
+            {
+                _bestScore = _score;
+            }
+            bestScoreLabel.Text = _bestScore.ToString();
         }
 
         private void GenerateNumber()
@@ -78,194 +109,271 @@ namespace _2048WinFormsApp
 
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
+            if (e.KeyCode != Keys.Right && e.KeyCode != Keys.Left && e.KeyCode != Keys.Up && e.KeyCode != Keys.Down)
+            {
+                return;
+            }
             if (e.KeyCode == Keys.Right)
             {
-                for (int i = 0; i < _mapSize; i++)
-                {
-                    for (int j = _mapSize - 1; j >= 0; j--)
-                    {
-                        if (_labelsMap[i, j].Text != string.Empty)
-                        {
-                            for (int k = j - 1; k >= 0; k--)
-                            {
-                                if (_labelsMap[i, k].Text != string.Empty)
-                                {
-                                    if (_labelsMap[i, j].Text == _labelsMap[i, k].Text)
-                                    {
-                                        var number = int.Parse(_labelsMap[i, j].Text);
-                                        _score += number * 2;
-                                        _labelsMap[i, j].Text = (number * 2).ToString();
-                                        _labelsMap[i, k].Text = string.Empty;
-                                    }
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-
-
-                for (int i = 0; i < _mapSize; i++)
-                {
-                    for (int j = _mapSize - 1; j >= 0; j--)
-                    {
-                        if (_labelsMap[i, j].Text == string.Empty)
-                        {
-                            for (int k = j - 1; k >= 0; k--)
-                            {
-                                if (_labelsMap[i, k].Text != string.Empty)
-                                {
-                                    _labelsMap[i, j].Text = _labelsMap[i, k].Text;
-                                    _labelsMap[i, k].Text = string.Empty;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
+                MoveRight();
             }
             if (e.KeyCode == Keys.Left)
             {
-
-                for (int i = 0; i < _mapSize; i++)
-                {
-                    for (int j = 0; j < _mapSize; j++)
-                    {
-                        if (_labelsMap[i, j].Text != string.Empty)
-                        {
-                            for (int k = j + 1; k < _mapSize; k++)
-                            {
-                                if (_labelsMap[i, k].Text != string.Empty)
-                                {
-                                    if (_labelsMap[i, j].Text == _labelsMap[i, k].Text)
-                                    {
-                                        var number = int.Parse(_labelsMap[i, j].Text);
-                                        _score += number * 2;
-                                        _labelsMap[i, j].Text = (number * 2).ToString();
-                                        _labelsMap[i, k].Text = string.Empty;
-                                    }
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                for (int i = 0; i < _mapSize; i++)
-                {
-                    for (int j = 0; j < _mapSize; j++)
-                    {
-                        if (_labelsMap[i, j].Text == string.Empty)
-                        {
-                            for (int k = j + 1; k < _mapSize; k++)
-                            {
-                                if (_labelsMap[i, k].Text != string.Empty)
-                                {
-                                    _labelsMap[i, j].Text = _labelsMap[i, k].Text;
-                                    _labelsMap[i, k].Text = string.Empty;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
+                MoveLeft();
 
             }
             if (e.KeyCode == Keys.Up)
             {
-                for (int j = 0; j < _mapSize; j++)
-                {
-                    for (int i = 0; i < _mapSize; i++)
-                    {
-
-                        if (_labelsMap[i, j].Text != string.Empty)
-                        {
-                            for (int k = i + 1; k < _mapSize; k++)
-                            {
-                                if (_labelsMap[k, j].Text != string.Empty)
-                                {
-                                    if (_labelsMap[i, j].Text == _labelsMap[k, j].Text)
-                                    {
-                                        var number = int.Parse(_labelsMap[i, j].Text);
-                                        _score += number * 2;
-                                        _labelsMap[i, j].Text = (number * 2).ToString();
-                                        _labelsMap[k, j].Text = string.Empty;
-                                    }
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                for (int j = 0; j < _mapSize; j++)
-                {
-                    for (int i = 0; i < _mapSize; i++)
-                    {
-                        if (_labelsMap[i, j].Text == string.Empty)
-                        {
-                            for (int k = i + 1; k < _mapSize; k++)
-                            {
-                                if (_labelsMap[k, j].Text != string.Empty)
-                                {
-                                    _labelsMap[i, j].Text = _labelsMap[k, j].Text;
-                                    _labelsMap[k, j].Text = string.Empty;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
+                MoveUp();
             }
             if (e.KeyCode == Keys.Down)
             {
-                for (int j = 0; j < _mapSize; j++)
-                {
-                    for (int i = _mapSize - 1; i >= 0; i--)
-                    {
-
-                        if (_labelsMap[i, j].Text != string.Empty)
-                        {
-                            for (int k = i - 1; k >= 0; k--)
-                            {
-                                if (_labelsMap[k, j].Text != string.Empty)
-                                {
-                                    if (_labelsMap[i, j].Text == _labelsMap[k, j].Text)
-                                    {
-                                        var number = int.Parse(_labelsMap[i, j].Text);
-                                        _score += number * 2;
-                                        _labelsMap[i, j].Text = (number * 2).ToString();
-                                        _labelsMap[k, j].Text = string.Empty;
-                                    }
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                for (int j = 0; j < _mapSize; j++)
-                {
-                    for (int i = _mapSize - 1; i >= 0; i--)
-                    {
-                        if (_labelsMap[i, j].Text == string.Empty)
-                        {
-                            for (int k = i - 1; k >= 0; k--)
-                            {
-                                if (_labelsMap[k, j].Text != string.Empty)
-                                {
-                                    _labelsMap[i, j].Text = _labelsMap[k, j].Text;
-                                    _labelsMap[k, j].Text = string.Empty;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
+                MoveDown();
             }
 
             GenerateNumber();
             ShowScore();
+            ShowBestScore();
+
+            if (Win())
+            {
+                UserManager.Add(new User() { Name = "test" + _score, Score = _score });
+                MessageBox.Show("Óðà! Âû ïîáåäèëè");
+                return;
+            }
+
+            if (EndGame())
+            {
+                UserManager.Add(new User() { Name = "test" + _score, Score = _score });
+                MessageBox.Show("Ê ñîæàëåíèþ âû ïðîèãðàëè!");
+                return;
+            }
+        }
+
+        private bool EndGame()
+        {
+            for (int i = 0; i < _mapSize; i++)
+            {
+                for (int j = 0; j < _mapSize; j++)
+                {
+                    if (_labelsMap[i, j].Text == "")
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            for (int i = 0; i < _mapSize - 1; i++)
+            {
+                for (int j = 0; j < _mapSize  - 1; j++)
+                {
+                    if (_labelsMap[i, j].Text == _labelsMap[i, j + 1].Text || _labelsMap[i, j].Text == _labelsMap[i + 1, j].Text)
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        private bool Win()
+        {
+            for (int i = 0; i < _mapSize; i++)
+            {
+                for (int j = 0; j < _mapSize; j++)
+                {
+                    if (_labelsMap[i, j].Text == "2048")
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        private void MoveDown()
+        {
+            for (int j = 0; j < _mapSize; j++)
+            {
+                for (int i = _mapSize - 1; i >= 0; i--)
+                {
+
+                    if (_labelsMap[i, j].Text != string.Empty)
+                    {
+                        for (int k = i - 1; k >= 0; k--)
+                        {
+                            if (_labelsMap[k, j].Text != string.Empty)
+                            {
+                                if (_labelsMap[i, j].Text == _labelsMap[k, j].Text)
+                                {
+                                    var number = int.Parse(_labelsMap[i, j].Text);
+                                    _score += number * 2;
+                                    _labelsMap[i, j].Text = (number * 2).ToString();
+                                    _labelsMap[k, j].Text = string.Empty;
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            for (int j = 0; j < _mapSize; j++)
+            {
+                for (int i = _mapSize - 1; i >= 0; i--)
+                {
+                    if (_labelsMap[i, j].Text == string.Empty)
+                    {
+                        for (int k = i - 1; k >= 0; k--)
+                        {
+                            if (_labelsMap[k, j].Text != string.Empty)
+                            {
+                                _labelsMap[i, j].Text = _labelsMap[k, j].Text;
+                                _labelsMap[k, j].Text = string.Empty;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void MoveUp()
+        {
+            for (int j = 0; j < _mapSize; j++)
+            {
+                for (int i = 0; i < _mapSize; i++)
+                {
+
+                    if (_labelsMap[i, j].Text != string.Empty)
+                    {
+                        for (int k = i + 1; k < _mapSize; k++)
+                        {
+                            if (_labelsMap[k, j].Text != string.Empty)
+                            {
+                                if (_labelsMap[i, j].Text == _labelsMap[k, j].Text)
+                                {
+                                    var number = int.Parse(_labelsMap[i, j].Text);
+                                    _score += number * 2;
+                                    _labelsMap[i, j].Text = (number * 2).ToString();
+                                    _labelsMap[k, j].Text = string.Empty;
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            for (int j = 0; j < _mapSize; j++)
+            {
+                for (int i = 0; i < _mapSize; i++)
+                {
+                    if (_labelsMap[i, j].Text == string.Empty)
+                    {
+                        for (int k = i + 1; k < _mapSize; k++)
+                        {
+                            if (_labelsMap[k, j].Text != string.Empty)
+                            {
+                                _labelsMap[i, j].Text = _labelsMap[k, j].Text;
+                                _labelsMap[k, j].Text = string.Empty;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void MoveLeft()
+        {
+            for (int i = 0; i < _mapSize; i++)
+            {
+                for (int j = 0; j < _mapSize; j++)
+                {
+                    if (_labelsMap[i, j].Text != string.Empty)
+                    {
+                        for (int k = j + 1; k < _mapSize; k++)
+                        {
+                            if (_labelsMap[i, k].Text != string.Empty)
+                            {
+                                if (_labelsMap[i, j].Text == _labelsMap[i, k].Text)
+                                {
+                                    var number = int.Parse(_labelsMap[i, j].Text);
+                                    _score += number * 2;
+                                    _labelsMap[i, j].Text = (number * 2).ToString();
+                                    _labelsMap[i, k].Text = string.Empty;
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            for (int i = 0; i < _mapSize; i++)
+            {
+                for (int j = 0; j < _mapSize; j++)
+                {
+                    if (_labelsMap[i, j].Text == string.Empty)
+                    {
+                        for (int k = j + 1; k < _mapSize; k++)
+                        {
+                            if (_labelsMap[i, k].Text != string.Empty)
+                            {
+                                _labelsMap[i, j].Text = _labelsMap[i, k].Text;
+                                _labelsMap[i, k].Text = string.Empty;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void MoveRight()
+        {
+            for (int i = 0; i < _mapSize; i++)
+            {
+                for (int j = _mapSize - 1; j >= 0; j--)
+                {
+                    if (_labelsMap[i, j].Text != string.Empty)
+                    {
+                        for (int k = j - 1; k >= 0; k--)
+                        {
+                            if (_labelsMap[i, k].Text != string.Empty)
+                            {
+                                if (_labelsMap[i, j].Text == _labelsMap[i, k].Text)
+                                {
+                                    var number = int.Parse(_labelsMap[i, j].Text);
+                                    _score += number * 2;
+                                    _labelsMap[i, j].Text = (number * 2).ToString();
+                                    _labelsMap[i, k].Text = string.Empty;
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+
+            for (int i = 0; i < _mapSize; i++)
+            {
+                for (int j = _mapSize - 1; j >= 0; j--)
+                {
+                    if (_labelsMap[i, j].Text == string.Empty)
+                    {
+                        for (int k = j - 1; k >= 0; k--)
+                        {
+                            if (_labelsMap[i, k].Text != string.Empty)
+                            {
+                                _labelsMap[i, j].Text = _labelsMap[i, k].Text;
+                                _labelsMap[i, k].Text = string.Empty;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         private void ðåñòàðòToolStripMenuItem_Click(object sender, EventArgs e)
@@ -281,6 +389,12 @@ namespace _2048WinFormsApp
         private void ïðàâèëàToolStripMenuItem_Click(object sender, EventArgs e)
         {
             MessageBox.Show("Ïðàâèëà èãðû!");
+        }
+
+        private void ïîêàçàòüÐåçóëüòàòûToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var resultsForm = new ResultsForm();
+            resultsForm.ShowDialog();
         }
     }
 }
