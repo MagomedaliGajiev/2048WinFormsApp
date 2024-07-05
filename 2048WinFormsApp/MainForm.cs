@@ -1,6 +1,3 @@
-
-using System.Windows.Forms;
-
 namespace _2048WinFormsApp
 {
     public partial class MainForm : Form
@@ -133,7 +130,29 @@ namespace _2048WinFormsApp
             int y = _startY + indexRow * (_labelSize + _padding);
             label.Location = new Point(x, y);
 
+            label.TextChanged += Label_TextChanged;
             return label;
+        }
+
+        private void Label_TextChanged(object? sender, EventArgs e)
+        {
+            var label = (Label)sender;
+            switch (label.Text)
+            {
+                case "": label.BackColor = SystemColors.ButtonShadow; break;
+                case "2": label.BackColor = Color.FromArgb(238, 228, 218); break;
+                case "4": label.BackColor = Color.FromArgb(237, 224, 200); break;
+                case "8": label.BackColor = Color.FromArgb(242, 177, 121); break;
+                case "16": label.BackColor = Color.FromArgb(245, 149, 99); break;
+                case "32": label.BackColor = Color.FromArgb(246, 124, 95); break;
+                case "64": label.BackColor = Color.FromArgb(246, 94, 59); break;
+                case "128": label.BackColor = Color.FromArgb(249, 246, 242); break;
+                case "256": label.BackColor = Color.FromArgb(237, 204, 97); break;
+                case "512": label.BackColor = Color.FromArgb(249, 246, 242); break;
+                case "1024": label.BackColor = SystemColors.ButtonShadow; break;
+                case "2048": label.BackColor = SystemColors.ButtonShadow; break;
+
+            }
         }
 
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
