@@ -1,12 +1,21 @@
+
+using System.Windows.Forms;
+
 namespace _2048WinFormsApp
 {
     public partial class MainForm : Form
     {
+        private const int _labelSize = 150;
+        private const int _padding = 6;
+        private const int _startX = 10;
+        private const int _startY = 150;
+
         private int _mapSize = 4;
         private Label[,] _labelsMap;
-        private static Random _random = new Random();
         private int _score = 0;
         private int _bestScore = 0;
+        private string userName;
+
         public MainForm()
         {
             InitializeComponent();
@@ -14,10 +23,28 @@ namespace _2048WinFormsApp
 
         private void MainForm_Load(object sender, EventArgs e)
         {
+            var startForm = new StartForm();
+            startForm.ShowDialog();
+            userName = startForm.userNameTextBox.Text;
+
+            SetMapSize(startForm.RadioButtons);
+
             InitMap();
             GenerateNumber();
             ShowScore();
             CalculateBestScore();
+        }
+
+        private void SetMapSize(List<RadioButton> radioButtons)
+        {
+            foreach (var button in radioButtons)
+            {
+                if (button.Checked)
+                {
+                    _mapSize = Convert.ToInt32(button.Text[0].ToString());
+                    break;
+                }
+            }
         }
 
         private void CalculateBestScore()
@@ -42,6 +69,8 @@ namespace _2048WinFormsApp
 
         private void InitMap()
         {
+            ClientSize = new Size(_startX + (_labelSize + _padding) * _mapSize, _startY + (_labelSize + _padding) * _mapSize);
+
             _labelsMap = new Label[_mapSize, _mapSize];
 
             for (int i = 0; i < _mapSize; i++)
@@ -74,7 +103,7 @@ namespace _2048WinFormsApp
             var random = new Random();
             while (true)
             {
-                var randomNumberLabel = _random.Next(_mapSize * _mapSize);
+                var randomNumberLabel = random.Next(_mapSize * _mapSize);
                 var indexRow = randomNumberLabel / _mapSize;
                 var indexColumn = randomNumberLabel % _mapSize;
                 if (_labelsMap[indexRow, indexColumn].Text == string.Empty)
@@ -98,10 +127,10 @@ namespace _2048WinFormsApp
             var label = new Label();
             label.BackColor = SystemColors.ButtonShadow;
             label.Font = new Font("Segoe UI", 18F, FontStyle.Bold, GraphicsUnit.Point, 204);
-            label.Size = new Size(150, 150);
+            label.Size = new Size(_labelSize, _labelSize);
             label.TextAlign = ContentAlignment.MiddleCenter;
-            int x = 10 + indexColumn * (150 + 6);
-            int y = 150 + indexRow * (150 + 6);
+            int x = _startX + indexColumn * (_labelSize + _padding);
+            int y = _startY + indexRow * (_labelSize + _padding);
             label.Location = new Point(x, y);
 
             return label;
@@ -137,14 +166,14 @@ namespace _2048WinFormsApp
 
             if (Win())
             {
-                UserManager.Add(new User() { Name = "test" + _score, Score = _score });
+                UserManager.Add(new User() { Name = userName, Score = _score });
                 MessageBox.Show("Ура! Вы победили");
                 return;
             }
 
             if (EndGame())
             {
-                UserManager.Add(new User() { Name = "test" + _score, Score = _score });
+                UserManager.Add(new User() { Name = userName, Score = _score });
                 MessageBox.Show("К сожалению вы проиграли!");
                 return;
             }
